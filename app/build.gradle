@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -19,6 +20,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
 }
@@ -47,4 +53,10 @@ dependencies {
 
     // EASY PERMISSION
     implementation 'pub.devrel:easypermissions:3.0.0'
+
+    // FIREBASE
+    //The Firebase Android library firebase-core is no longer needed. This SDK included the Firebase SDK for Google Analytics.
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    //add SDKs for any other desired Firebase products
+    //https://firebase.google.com/docs/android/setup#available-libraries
 }
