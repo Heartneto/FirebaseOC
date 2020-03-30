@@ -1,15 +1,19 @@
 package edu.demo.firebaseoc.base;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.ButterKnife;
+import edu.demo.firebaseoc.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -40,5 +44,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void configureToolbar(){
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+    }
+
+    // ----------------
+    // ERROR HANDLER
+    // ----------------
+    protected OnFailureListener onFailureListener(){
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error),
+                        Toast.LENGTH_LONG).show();
+            }
+        };
     }
 }
