@@ -8,6 +8,7 @@ android {
     defaultConfig {
         applicationId "edu.demo.firebaseoc"
         minSdkVersion 19
+        multiDexEnabled true
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -67,4 +68,7 @@ dependencies {
 
     // FACEBOOK LOGIN SUPPORT
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
 }

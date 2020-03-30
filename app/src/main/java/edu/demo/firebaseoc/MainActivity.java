@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import edu.demo.firebaseoc.api.UserHelper;
 import edu.demo.firebaseoc.auth.ProfileActivity;
 import edu.demo.firebaseoc.base.BaseActivity;
 
@@ -63,9 +64,11 @@ public class MainActivity extends BaseActivity {
                         .createSignInIntentBuilder()
                         .setTheme(R.style.LoginTheme)
                         .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(),
+                                Arrays.asList(
+                                        new AuthUI.IdpConfig.EmailBuilder().build(),
                                         new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                        new AuthUI.IdpConfig.FacebookBuilder().build()))
+                                        new AuthUI.IdpConfig.FacebookBuilder().build()
+                                ))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.ic_logo_auth)
                         .build(),
@@ -101,6 +104,8 @@ public class MainActivity extends BaseActivity {
 
             // Successfully signed in
             if (resultCode == RESULT_OK) { // SUCCESS
+                // CREATE USER IN FIRESTORE
+                createUserInFirestore();
                 showSnackbar(coordinatorLayout, getString(R.string.connection_succeed));
             } else { // ERRORS
                 // Sign in failed
@@ -132,6 +137,21 @@ public class MainActivity extends BaseActivity {
             this.startProfileActivity();
         else {
             startSignInActivity();
+        }
+    }
+
+    // ------------------
+    // REST HTTP REQUEST
+    // ------------------
+    private void createUserInFirestore(){
+        if (getCurrentUser() != null){
+            String urlPicture = (getCurrentUser().getPhotoUrl() != null ) ?
+                    getCurrentUser().getPhotoUrl().toString() : null;
+            String username = getCurrentUser().getDisplayName();
+            String uid = getCurrentUser().getUid();
+
+            UserHelper.createUser(uid, username, urlPicture)
+                    .addOnFailureListener(onFailureListener());
         }
     }
 }
