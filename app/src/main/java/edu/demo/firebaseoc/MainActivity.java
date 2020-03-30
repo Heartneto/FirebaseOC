@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import edu.demo.firebaseoc.auth.ProfileActivity;
 import edu.demo.firebaseoc.base.BaseActivity;
 
 public class MainActivity extends BaseActivity {
@@ -25,6 +27,8 @@ public class MainActivity extends BaseActivity {
     // FOR DESIGN
     @BindView(R.id.main_activity_coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.main_activity_button_login)
+    Button buttonLogin;
 
     // FOR DATA
     // 1 - Identifier for Sign-In Activity
@@ -34,6 +38,13 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         handleResponseAfterSignIn(requestCode, resultCode,data);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update UI when activity is resuming
+        updateUIWhenResuming();
     }
 
     @Override
@@ -62,11 +73,23 @@ public class MainActivity extends BaseActivity {
         );
     }
 
+    // Launch Profile Activity
+    private void startProfileActivity(){
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
     //  -------
     // UI
     // --------
     private void showSnackbar(CoordinatorLayout pCoordinatorLayout, String message){
         Snackbar.make(pCoordinatorLayout, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    // Update UI when activity is resuming
+    private void updateUIWhenResuming(){
+        buttonLogin.setText(isCurrentUserLogged() ?
+                getString(R.string.button_login_text_logged) : getString(R.string.button_login_text_not_logged));
     }
 
     // -----------
@@ -104,7 +127,11 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.main_activity_button_login)
     public void onClickLoginButton() {
-        // 3 - Launch Sign-In Activity when user clicked on Login Button
-        this.startSignInActivity();
+        // Start appropriate activity
+        if (isCurrentUserLogged())
+            this.startProfileActivity();
+        else {
+            startSignInActivity();
+        }
     }
 }
