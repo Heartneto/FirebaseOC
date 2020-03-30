@@ -1,5 +1,7 @@
 package edu.demo.firebaseoc.auth;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -10,6 +12,8 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 
 import butterknife.BindView;
@@ -28,6 +32,11 @@ public class ProfileActivity extends BaseActivity {
     TextView textViewEmail;
     @BindView(R.id.profile_activity_progress_bar)
     ProgressBar progressBar;
+
+    // FOR DATA
+    // Identify each Http Request
+    private static final int SIGN_OUT_TASK = 10;
+    private static final int DELETE_USER_TASK = 20;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +73,23 @@ public class ProfileActivity extends BaseActivity {
         }
     }
 
+    // Create OnCompleteListener called after tasks ended
+    private OnSuccessListener<Void> updateUIAfterResTRequestsCompleted(final  int origin){
+        return new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                switch (origin){
+                    case SIGN_OUT_TASK:
+                        finish();
+                    case DELETE_USER_TASK:
+                        finish();
+                    default:
+                        break;
+                }
+            }
+        };
+    }
+
     // --------------
     // ACTIONS
     // --------------
@@ -71,8 +97,38 @@ public class ProfileActivity extends BaseActivity {
     public void onClickUpdateButton(){}
 
     @OnClick(R.id.profile_activity_button_sign_out)
-    public void onClickSignOutButton(){}
+    public void onClickSignOutButton(){ signOutUserFromFirebase(); }
 
     @OnClick(R.id.profile_activity_button_delete)
-    public void onClickDeleteButton(){}
+    public void onClickDeleteButton(){
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.popup_message_confirmation_delete_account)
+                .setPositiveButton(R.string.popup_message_choice_yes,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteUserFromFirebase();
+                            }
+                        })
+                .setNegativeButton(R.string.popup_message_choice_no, null)
+                .show();
+    }
+
+    // -----------------
+    // REST REQUESTS
+    // -----------------
+    // Create http request (Signout & delete)
+    private void signOutUserFromFirebase(){
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnSuccessListener(this, updateUIAfterResTRequestsCompleted(SIGN_OUT_TASK));
+    }
+
+    private void deleteUserFromFirebase(){
+        if (getCurrentUser() != null){
+            AuthUI.getInstance()
+                    .delete(this)
+                    .addOnSuccessListener(this, updateUIAfterResTRequestsCompleted(DELETE_USER_TASK));
+        }
+    }
 }
