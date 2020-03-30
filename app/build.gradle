@@ -62,5 +62,9 @@ dependencies {
 
     // FIREBASE UI AUTH
     implementation 'com.firebaseui:firebase-ui-auth:6.2.1'
+
     implementation 'com.google.android.material:material:1.0.0'
+
+    // FACEBOOK LOGIN SUPPORT
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 }
